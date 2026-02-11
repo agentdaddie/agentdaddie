@@ -1,9 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @custom-variant dark (&:is(.dark *));
-
 
 html {
 	scroll-behavior: smooth;
@@ -201,9 +199,7 @@ pre {
 }
 
 body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: "gesit", Arial, Helvetica, sans-serif;
+  font-family: "gesit", Arial, Helvetica, sans-serif;
 }
 
 @layer base {
@@ -211,7 +207,12 @@ body {
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
   * {
     @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }
