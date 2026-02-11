@@ -9,7 +9,9 @@ declare namespace Cloudflare {
 		WORKER_SELF_REFERENCE: Fetcher /* agentdaddie */;
 	}
 }
-interface CloudflareEnv extends Cloudflare.Env {}
+interface CloudflareEnv extends Cloudflare.Env {
+    HYPERDRIVE: any;
+}
 type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };

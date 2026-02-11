@@ -34,7 +34,14 @@
 	],
 	"observability": {
 		"enabled": true
-	}
+	},
+	"hyperdrive": [
+		{
+		"binding": "HYPERDRIVE",
+		"id": "f080f346f4d642c4896c090926a4cf5t",
+		"localConnectionString": "postgresql://agentdaddie:agentdaddie@localhost:5436/agentdaddie"
+		}
+	],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
