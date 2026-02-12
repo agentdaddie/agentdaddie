@@ -3,13 +3,14 @@ import { AppSidebar } from "@/components/app/sidebar";
 import { Header } from "@/components/app/header";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-
+import { DigitalOceanProvider } from "@/context/digital-ocean-provider";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
+    <DigitalOceanProvider>
+      <SidebarProvider defaultOpen={false}>
+        <AppSidebar variant="inset" />
+        <SidebarInset>
           <Header />
           <div className="flex flex-1 flex-col ">
             <div className="@container/main flex flex-1 flex-col gap-2">
@@ -18,7 +19,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </DigitalOceanProvider>
   );
 }
