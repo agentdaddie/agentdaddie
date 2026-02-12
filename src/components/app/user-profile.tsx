@@ -68,7 +68,7 @@ export function UserProfile() {
                 {user.email}
               </span>
               {isConnected ? (
-                <span className="text-emerald-400 text-xs">
+                <span className="text-emerald-400 text-xs font-medium">
                   Digital Ocean (connected)
                 </span>
               ) : null}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { UserProfile } from "./user-profile";
 import { Bubbles } from "lucide-react";
 import { ConnectDigitalOcean } from "./connect-digital-ocean";
+import { DeployDialog } from "./deploy-dialog";
 
 export function Header() {
   return (
@@ -25,6 +26,7 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-2">
+            <DeployDialog />
             <ConnectDigitalOcean />
             <UserProfile />
           </div>

@@ -1,8 +1,8 @@
 # Agent Rules
 
 ## Data Fetching
-- Always use `useSWR` for client-side data fetching.
-- Always use `axios` inside fetchers.
+- Always use `swr` for client-side data fetching. - (already installed)
+- Always use `axios` inside fetchers. - (already installed)
 - Keep all fetcher functions in `/src/lib/fetchers.ts`.
 
 ## Types
