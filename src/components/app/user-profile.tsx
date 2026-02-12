@@ -17,7 +17,7 @@ export function UserProfile() {
   const { isConnected } = useDigitalOcean();
 
   if (isPending)
-    return <div className="size-8 rounded-full bg-base-200 animate-pulse" />;
+    return <div className="size-7 rounded-full bg-accent" />;
 
   if (!session) return null;
 

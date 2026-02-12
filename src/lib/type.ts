@@ -20,3 +20,7 @@ export interface DeployDialogScreen {
   title: string
   description: string
 }
+
+export interface DeploySubmissionResponse {
+  ok: boolean
+}

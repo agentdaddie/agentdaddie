@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Send } from "lucide-react"
+import useSWRMutation from "swr/mutation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,11 +16,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { submitDeployConfiguration } from "@/lib/fetchers"
 import { cn } from "@/lib/utils"
 import type {
   DeployDialogFormValues,
   DeployDialogScreen,
   DeployRegion,
+  DeploySubmissionResponse,
 } from "@/lib/type"
 
 const deployRegions: DeployRegion[] = [
@@ -73,6 +76,7 @@ const llmProviders: Array<{ id: "openai" | "claude" | "openrouter"; label: strin
 export function DeployDialog() {
   const [open, setOpen] = useState<boolean>(false)
   const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0)
+  const [submitError, setSubmitError] = useState<string>("")
 
   const {
     register,
@@ -98,13 +102,33 @@ export function DeployDialog() {
   const selectedRegionId = watch("regionId")
   const selectedLlmProvider = watch("llmProvider")
   const activeScreen = deployDialogScreens[currentScreenIndex]
+  const totalScreens = deployDialogScreens.length
   const isLastScreen = currentScreenIndex === deployDialogScreens.length - 1
+  const { trigger: triggerDeploy, isMutating: isSubmittingDeploy } =
+    useSWRMutation<
+      DeploySubmissionResponse,
+      Error,
+      string,
+      DeployDialogFormValues
+    >("/api/deploy", async (_key, { arg }) => submitDeployConfiguration(arg))
 
-  const onSubmit = (values: DeployDialogFormValues) => {
-    void values
-    setOpen(false)
-    setCurrentScreenIndex(0)
-    reset()
+  const onSubmit = async (values: DeployDialogFormValues) => {
+    setSubmitError("")
+
+    try {
+      const response = await triggerDeploy(values)
+      console.log(response)
+      if (!response.ok) {
+        setSubmitError("Unable to create deployment. Please try again.")
+        return
+      }
+
+      setOpen(false)
+      setCurrentScreenIndex(0)
+      reset()
+    } catch {
+      setSubmitError("Unable to create deployment. Please try again.")
+    }
   }
 
   const handleNextScreen = async () => {
@@ -134,6 +158,7 @@ export function DeployDialog() {
     setOpen(nextOpen)
     if (!nextOpen) {
       setCurrentScreenIndex(0)
+      setSubmitError("")
       reset()
     }
   }
@@ -150,6 +175,9 @@ export function DeployDialog() {
           <DialogHeader className="text-left">
             <DialogTitle>{activeScreen.title}</DialogTitle>
             <DialogDescription>{activeScreen.description}</DialogDescription>
+            <p className="text-xs text-muted-foreground">
+              Step {currentScreenIndex + 1} of {totalScreens}
+            </p>
           </DialogHeader>
 
           <input
@@ -281,7 +309,7 @@ export function DeployDialog() {
               </div>
             ) : index === currentScreenIndex && screen.id === "telegram" ? (
               <div key={screen.id} className="space-y-4">
-                <div className="rounded-md border p-4 bg-base-800">
+                <div className="rounded-md border bg-muted/30 p-4">
                   <div className="mb-4 flex items-center gap-2 text-base font-semibold">
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-sky-500 text-white">
                       <Send className="h-3.5 w-3.5" />
@@ -404,9 +432,19 @@ export function DeployDialog() {
             ) : null
           )}
 
+          {submitError ? (
+            <p className="text-sm text-destructive" role="alert" aria-live="polite">
+              {submitError}
+            </p>
+          ) : null}
+
           <DialogFooter>
             {currentScreenIndex === 0 ? (
-              <Button type="button" onClick={handleNextScreen}>
+              <Button
+                type="button"
+                onClick={handleNextScreen}
+                disabled={isSubmittingDeploy}
+              >
                 Next
               </Button>
             ) : isLastScreen ? (
@@ -414,26 +452,34 @@ export function DeployDialog() {
                 <Button
                   type="button"
                   variant="outline"
+                  disabled={isSubmittingDeploy}
                   onClick={() =>
                     setCurrentScreenIndex((previousIndex) => previousIndex - 1)
                   }
                 >
                   Back
                 </Button>
-                <Button type="submit">Confirm Deployment</Button>
+                <Button type="submit" disabled={isSubmittingDeploy}>
+                  {isSubmittingDeploy ? "Deploying..." : "Confirm Deployment"}
+                </Button>
               </div>
             ) : (
               <div className="flex w-full justify-between gap-2">
                 <Button
                   type="button"
                   variant="outline"
+                  disabled={isSubmittingDeploy}
                   onClick={() =>
                     setCurrentScreenIndex((previousIndex) => previousIndex - 1)
                   }
                 >
                   Back
                 </Button>
-                <Button type="button" onClick={handleNextScreen}>
+                <Button
+                  type="button"
+                  onClick={handleNextScreen}
+                  disabled={isSubmittingDeploy}
+                >
                   Next
                 </Button>
               </div>
