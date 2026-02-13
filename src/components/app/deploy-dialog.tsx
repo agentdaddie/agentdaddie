@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Send } from "lucide-react"
+import { Plus, Send } from "lucide-react"
 import useSWRMutation from "swr/mutation"
 
 import { Button } from "@/components/ui/button"
@@ -13,7 +13,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { submitDeployConfiguration } from "@/lib/fetchers"
@@ -42,7 +41,7 @@ const deployDialogScreens: DeployDialogScreen[] = [
   {
     id: "region",
     title: "Deploy Configuration",
-    description: "Select region and add password.",
+    description: "Select region which is closer to you.",
   },
   {
     id: "llm",
@@ -56,8 +55,8 @@ const deployDialogScreens: DeployDialogScreen[] = [
   },
   {
     id: "openclaw-auth",
-    title: "OpenClaw Auth Setup",
-    description: "Set up access values for your deployed OpenClaw.",
+    title: "Open Claw Auth Setup",
+    description: "Set up access values for your deployed Open Claw.",
   },
   {
     id: "confirm",
@@ -89,7 +88,6 @@ export function DeployDialog() {
   } = useForm<DeployDialogFormValues>({
     defaultValues: {
       regionId: "",
-      password: "",
       llmProvider: "",
       apiKey: "",
       telegramBotToken: "",
@@ -130,13 +128,14 @@ export function DeployDialog() {
       setSubmitError("Unable to create deployment. Please try again.")
     }
   }
+  const submitDeployment = handleSubmit(onSubmit)
 
   const handleNextScreen = async () => {
     const currentScreenId = activeScreen.id
     let isValid = false
 
     if (currentScreenId === "region") {
-      isValid = await trigger(["regionId", "password"])
+      isValid = await trigger(["regionId"])
     } else if (currentScreenId === "llm") {
       isValid = await trigger(["llmProvider", "apiKey"])
     } else if (currentScreenId === "telegram") {
@@ -164,18 +163,25 @@ export function DeployDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Deploy
-        </Button>
-      </DialogTrigger>
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        type="button"
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+        className="rounded-full text-teal-300 hover:text-teal-400 text-xs font-[550] tracking-wider"
+      >
+       <Plus/> Deploy Claw
+      </Button>
+
+      <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={(event) => event.preventDefault()} className="space-y-4">
           <DialogHeader className="text-left">
             <DialogTitle>{activeScreen.title}</DialogTitle>
-            <DialogDescription>{activeScreen.description}</DialogDescription>
-            <p className="text-xs text-muted-foreground">
+            <DialogDescription className="">{activeScreen.description}</DialogDescription>
+            <p className="text-xs text-muted-foreground font-semibold">
               Step {currentScreenIndex + 1} of {totalScreens}
             </p>
           </DialogHeader>
@@ -194,7 +200,7 @@ export function DeployDialog() {
           {deployDialogScreens.map((screen, index) =>
             index === currentScreenIndex && screen.id === "region" ? (
               <div key={screen.id} className="space-y-4">
-                <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-3 py-1">
                   {deployRegions.map((region) => {
                     const isSelected = selectedRegionId === region.id
 
@@ -210,9 +216,9 @@ export function DeployDialog() {
                           })
                         }
                         className={cn(
-                          "flex h-11 items-center gap-3 rounded-md border px-3 text-left text-sm transition-colors",
+                          "flex h-9 items-center gap-3 rounded-full border px-3 text-left text-sm transition-colors",
                           isSelected
-                            ? "border-primary bg-accent text-primary"
+                            ? "ring ring-secondary bg-accent text-secondary"
                             : "border-border hover:bg-accent/60"
                         )}
                       >
@@ -227,29 +233,10 @@ export function DeployDialog() {
                     {errors.regionId.message}
                   </p>
                 ) : null}
-                <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium">
-                    Password
-                  </label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter password"
-                    {...register("password", {
-                      required: "Password is required",
-                    })}
-                    aria-invalid={errors.password ? "true" : "false"}
-                  />
-                  {errors.password ? (
-                    <p className="text-sm text-destructive">
-                      {errors.password.message}
-                    </p>
-                  ) : null}
-                </div>
               </div>
             ) : index === currentScreenIndex && screen.id === "llm" ? (
               <div key={screen.id} className="space-y-4">
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 py-0.5">
                   {llmProviders.map((provider) => {
                     const isSelected = selectedLlmProvider === provider.id
 
@@ -265,9 +252,9 @@ export function DeployDialog() {
                           })
                         }
                         className={cn(
-                          "flex h-10 items-center justify-center rounded-md border px-3 text-sm transition-colors",
+                          "flex h-9 items-center justify-center rounded-full border px-3 text-sm transition-colors",
                           isSelected
-                            ? "border-primary bg-accent text-primary"
+                            ? "ring ring-secondary bg-accent text-secondary"
                             : "border-border hover:bg-accent/60"
                         )}
                       >
@@ -277,7 +264,7 @@ export function DeployDialog() {
                   })}
                 </div>
                 {errors.llmProvider ? (
-                  <p className="text-sm text-destructive">
+                  <p className="text-xs text-destructive">
                     {errors.llmProvider.message}
                   </p>
                 ) : null}
@@ -296,7 +283,7 @@ export function DeployDialog() {
                       aria-invalid={errors.apiKey ? "true" : "false"}
                     />
                     {errors.apiKey ? (
-                      <p className="text-sm text-destructive">
+                      <p className="text-xs text-destructive">
                         {errors.apiKey.message}
                       </p>
                     ) : null}
@@ -344,7 +331,7 @@ export function DeployDialog() {
                     aria-invalid={errors.telegramBotToken ? "true" : "false"}
                   />
                   {errors.telegramBotToken ? (
-                    <p className="text-sm text-destructive">
+                    <p className="text-xs text-destructive">
                       {errors.telegramBotToken.message}
                     </p>
                   ) : null}
@@ -369,13 +356,13 @@ export function DeployDialog() {
                     aria-invalid={errors.openClawAuthPassword ? "true" : "false"}
                   />
                   {errors.openClawAuthPassword ? (
-                    <p className="text-sm text-destructive">
+                    <p className="text-xs text-destructive">
                       {errors.openClawAuthPassword.message}
                     </p>
                   ) : null}
                 </div>
 
-                <div className="space-y-2">
+                <div>
                   <label
                     htmlFor="openClawAuthUsername"
                     className="text-sm font-medium"
@@ -386,12 +373,12 @@ export function DeployDialog() {
                     id="openClawAuthUsername"
                     placeholder="Enter auth username"
                     {...register("openClawAuthUsername", {
-                      required: "OpenClaw auth username is required",
+                      required: "Open Claw auth username is required",
                     })}
                     aria-invalid={errors.openClawAuthUsername ? "true" : "false"}
                   />
                   {errors.openClawAuthUsername ? (
-                    <p className="text-sm text-destructive">
+                    <p className="text-xs text-destructive">
                       {errors.openClawAuthUsername.message}
                     </p>
                   ) : null}
@@ -410,30 +397,29 @@ export function DeployDialog() {
                     aria-invalid={errors.openClawGatewayId ? "true" : "false"}
                   />
                   {errors.openClawGatewayId ? (
-                    <p className="text-sm text-destructive">
+                    <p className="text-xs text-destructive">
                       {errors.openClawGatewayId.message}
                     </p>
                   ) : null}
                 </div>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-secondary">
                   Save these somewhere because you will need them to access your
-                  deployed OpenClaw.
+                  deployed Open Claw.
                 </p>
               </div>
             ) : index === currentScreenIndex && screen.id === "confirm" ? (
               <div key={screen.id} className="space-y-3 rounded-md border p-4 text-sm text-muted-foreground">
                 <p>Confirm deployment to start provisioning.</p>
                 <p>
-                  It will take some time. After deployment, you will get your
-                  OpenClaw URL in dashboard with access guide.
+                 It will take some time. After deployment is successful (around 5–10 minutes), you will receive your Open Claw URL on the dashboard along with an access guide via your Telegram.
                 </p>
               </div>
             ) : null
           )}
 
           {submitError ? (
-            <p className="text-sm text-destructive" role="alert" aria-live="polite">
+            <p className="text-xs text-destructive" role="alert" aria-live="polite">
               {submitError}
             </p>
           ) : null}
@@ -442,24 +428,35 @@ export function DeployDialog() {
             {currentScreenIndex === 0 ? (
               <Button
                 type="button"
+                variant={"outline"}
+                size={"sm"}
+                className=""
                 onClick={handleNextScreen}
                 disabled={isSubmittingDeploy}
               >
-                Next
+                Move Forward
               </Button>
             ) : isLastScreen ? (
               <div className="flex w-full justify-between gap-2">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
+                  size={"sm"}
                   disabled={isSubmittingDeploy}
                   onClick={() =>
                     setCurrentScreenIndex((previousIndex) => previousIndex - 1)
                   }
+                  className="bg-accent/35"
+
                 >
                   Back
                 </Button>
-                <Button type="submit" disabled={isSubmittingDeploy}>
+                <Button
+                  size={"sm"}
+                  type="button"
+                  onClick={() => void submitDeployment()}
+                  disabled={isSubmittingDeploy}
+                >
                   {isSubmittingDeploy ? "Deploying..." : "Confirm Deployment"}
                 </Button>
               </div>
@@ -467,26 +464,31 @@ export function DeployDialog() {
               <div className="flex w-full justify-between gap-2">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
+                  size={"sm"}
                   disabled={isSubmittingDeploy}
                   onClick={() =>
                     setCurrentScreenIndex((previousIndex) => previousIndex - 1)
                   }
+                  className="bg-accent/35"
                 >
                   Back
                 </Button>
                 <Button
                   type="button"
+                  variant={"outline"}
+                  size={"sm"}
                   onClick={handleNextScreen}
                   disabled={isSubmittingDeploy}
                 >
-                  Next
+                  Move Forward
                 </Button>
               </div>
             )}
           </DialogFooter>
         </form>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   )
 }
