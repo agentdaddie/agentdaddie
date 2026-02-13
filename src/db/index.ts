@@ -4,6 +4,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 import * as authSchema from "./schema/auth";
+import * as doSchema from "./schema/do-deploy";
 
 
 export const getDb = cache(async () => {
@@ -15,5 +16,5 @@ export const getDb = cache(async () => {
     maxUses: 1,
   });
 
-  return drizzle({ client: pool, schema: { ...authSchema} });
+  return drizzle({ client: pool, schema: { ...authSchema, ...doSchema} });
 });

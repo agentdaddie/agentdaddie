@@ -66,9 +66,9 @@ const deployDialogScreens: DeployDialogScreen[] = [
   },
 ]
 
-const llmProviders: Array<{ id: "openai" | "claude" | "openrouter"; label: string }> = [
+const llmProviders: Array<{ id: "openai" | "anthropic" | "openrouter"; label: string }> = [
   { id: "openai", label: "OpenAI" },
-  { id: "claude", label: "Claude" },
+  { id: "anthropic", label: "Anthropic" },
   { id: "openrouter", label: "Open Router" },
 ]
 

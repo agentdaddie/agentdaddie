@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
+const tunnelOrigin = process.env.NEXT_ALLOWED_DEV_ORIGIN;
+
 const nextConfig: NextConfig = {
-	/* config options here */
+  allowedDevOrigins: tunnelOrigin
+    ? [tunnelOrigin]
+    : ["https://45dc-103-70-80-93.ngrok-free.app"],
 };
 
 export default nextConfig;

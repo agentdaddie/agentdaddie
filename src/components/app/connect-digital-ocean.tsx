@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,28 +9,31 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { LockKeyholeOpen } from "lucide-react";
 import { useDigitalOcean } from "../../context/digital-ocean-provider";
 
 export function ConnectDigitalOcean() {
   const { isConnected, isLoading, startConnection } = useDigitalOcean();
+  const [open, setOpen] = useState(false);
 
   if (isLoading || isConnected) {
     return null;
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          size="xs"
-          className="bg-blue-600/35 hover:bg-primary-900 tracking-wide ring-2 ring-primary-600 text-secondary text-xs font-medium"
-        >
-          <LockKeyholeOpen /> Digital Ocean
-        </Button>
-      </DialogTrigger>
+    <>
+      <Button
+        size="xs"
+        type="button"
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+        className="bg-blue-600/35 hover:bg-primary-900 tracking-wide ring-2 ring-primary-600 text-secondary text-xs font-medium"
+      >
+        <LockKeyholeOpen /> Digital Ocean
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader className="text-left">
           <DialogTitle className="text-blue-50">
@@ -49,6 +53,7 @@ export function ConnectDigitalOcean() {
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   );
 }

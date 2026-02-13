@@ -1,0 +1,1 @@
+ALTER TABLE "do_deployment" ADD COLUMN "tunnel_log" text;

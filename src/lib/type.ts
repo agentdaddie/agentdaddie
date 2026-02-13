@@ -6,8 +6,7 @@ export interface DeployRegion {
 
 export interface DeployDialogFormValues {
   regionId: string
-  password: string
-  llmProvider: "openai" | "claude" | "openrouter" | ""
+  llmProvider: "openai" | "anthropic" | "openrouter" | ""
   apiKey: string
   telegramBotToken: string
   openClawAuthPassword: string
@@ -23,4 +22,25 @@ export interface DeployDialogScreen {
 
 export interface DeploySubmissionResponse {
   ok: boolean
+}
+
+export interface DropletCreationResponse{
+  droplet: {
+    id: number;
+  };
+};
+
+export interface DigitalOceanErrorResponse {
+  message?: string
+  id?: string
+}
+
+export interface DeployCheckRequestBody {
+  deploymentItemPrimaryId: string
+  tunnelLog: string
+}
+
+export interface DeployCheckResponse {
+  ok: boolean
+  status: "failed" | "success"
 }
