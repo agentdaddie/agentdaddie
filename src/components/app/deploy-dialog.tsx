@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Plus, Send } from "lucide-react"
+import { Loader, Plus, Send } from "lucide-react"
 import useSWRMutation from "swr/mutation"
 
 import { Button } from "@/components/ui/button"
@@ -457,7 +457,7 @@ export function DeployDialog() {
                   onClick={() => void submitDeployment()}
                   disabled={isSubmittingDeploy}
                 >
-                  {isSubmittingDeploy ? "Deploying..." : "Confirm Deployment"}
+                  {isSubmittingDeploy ? <Loader className="size-4 animate-spin"/> : "Confirm Deployment"}
                 </Button>
               </div>
             ) : (

@@ -7,8 +7,10 @@ import { UserProfile } from "./user-profile";
 import { Bubbles } from "lucide-react";
 import { ConnectDigitalOcean } from "./connect-digital-ocean";
 import { DeployDialog } from "./deploy-dialog";
+import { useDigitalOcean } from "@/context/digital-ocean-provider";
 
 export function Header() {
+  const { isConnected } = useDigitalOcean();
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) rounded-t-2xl border-b border-border z-50 backdrop-blur-2xl">
       <div className="flex flex-col w-full px-4 py-2 md:py-0 md:pt-1">
@@ -26,7 +28,9 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <DeployDialog />
+            {isConnected&&(
+              <DeployDialog />
+            )}
             <ConnectDigitalOcean />
             <UserProfile />
           </div>

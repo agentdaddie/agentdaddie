@@ -35,19 +35,14 @@ function getDomainFromUrl(url: string | null): string {
   }
 }
 
-function formatCreatedAt(value: string | null): string {
+function formatCreatedAt(value: Date | null): string {
   if (!value) return "Unknown";
-  const direct = new Date(value);
-  if (!Number.isNaN(direct.getTime())) return direct.toLocaleString();
-
-  if (value.includes(":")) {
-    const now = new Date();
-    const datePart = now.toISOString().slice(0, 10);
-    const fallback = new Date(`${datePart}T${value}`);
-    if (!Number.isNaN(fallback.getTime())) return fallback.toLocaleString();
-  }
-
-  return "Unknown";
+  
+  const date = value instanceof Date ? value : new Date(value);
+  
+  if (isNaN(date.getTime())) return "Unknown";
+  
+  return date.toLocaleString();
 }
 
 const statusText: Record<DeployItem["status"], string> = {
@@ -58,14 +53,14 @@ const statusText: Record<DeployItem["status"], string> = {
 
 const statusIcon: Record<DeployItem["status"], ReactNode> = {
   started: <Loader className="size-4 animate-spin text-amber-300" />,
-  success: <BadgeCheck className="size-4 text-emerald-300" />,
-  failed: <CircleX className="size-4 text-rose-300" />,
+  success: <BadgeCheck className="size-4 text-sky-300" />,
+  failed: <CircleX className="size-4 text-destructive" />,
 };
 
 const providerLabel: Record<DeployItem["llmProvider"], string> = {
-  openai: "OpenAI",
+  openai: "Open AI",
   anthropic: "Anthropic",
-  openrouter: "OpenRouter",
+  openrouter: "Open Router",
 };
 
 type DeploymentDetailProps = {
@@ -107,8 +102,8 @@ export function DeploymentDetail({
     [currentDeployment?.deployedUrl],
   );
   const createdAtText = useMemo(
-    () => formatCreatedAt(currentDeployment?.createdAt ?? null),
-    [currentDeployment?.createdAt],
+    () => formatCreatedAt(currentDeployment?.deployAt ?? null),
+    [currentDeployment?.deployAt],
   );
   const canOpenLink =
     currentDeployment?.status === "success" &&

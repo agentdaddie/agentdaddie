@@ -1,57 +1,88 @@
-"use client"
+"use client";
 
-import { useMemo, useState, type ReactNode } from "react"
-import useSWR from "swr"
-import { BadgeCheck, CircleDot, CircleX, Loader, Server } from "lucide-react"
+import { useMemo, useState, type ReactNode } from "react";
+import useSWR from "swr";
+import { BadgeCheck, CircleDot, CircleX, CloudUpload, Loader, Server } from "lucide-react";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
-import { Skeleton } from "@/components/ui/skeleton"
-import { DeploymentDetail } from "@/components/app/deployment-detail"
-import { fetchDeployItems } from "@/lib/fetchers"
+import { Skeleton } from "@/components/ui/skeleton";
+import { DeploymentDetail } from "@/components/app/deployment-detail";
+import { fetchDeployItems } from "@/lib/fetchers";
 
-import type { DeployItem, DeployItemsResponse } from "@/lib/type"
+import type { DeployItem, DeployItemsResponse } from "@/lib/type";
+import { useDigitalOcean } from "@/context/digital-ocean-provider";
 
+function EmptyState() {
+  const {isConnected} = useDigitalOcean()
+
+  const emptyContent = !isConnected?(
+    "Connect your Digital Ocean account for quick, easy and secure deployment of Open Claw on your own personal server in just a few clicks."
+  ):(
+    "You’re all set! Deploy Open Claw on your server in just a few clicks."
+  )
+  return (
+    <Empty>
+      <EmptyHeader className="py-32 md:py-24">
+        <EmptyMedia variant="icon">
+          {!isConnected?<Server/>:<CloudUpload/>}
+        </EmptyMedia>
+        <EmptyTitle className="font-semibold tracking-tight text-base-50">No Claw Is Deployed Yet</EmptyTitle>
+        <EmptyDescription className="font-semibold text-muted-foreground tracking-wide">
+          {emptyContent}
+        </EmptyDescription>
+        {isConnected&&(
+          <EmptyContent className="text-xs text-secondary font-[550] tracking-wide'">
+            We never store or access your API keys or tokens. All data stays securely on your own server, fully under your control.
+          </EmptyContent>
+        )}
+      </EmptyHeader>
+    </Empty>
+  );
+}
 const statusIcons: Record<DeployItem["status"], ReactNode> = {
-  started: <Loader className="size-4 animate-spin" />,
+  started: <Loader className="size-4 animate-spin text-amber-300" />,
   success: <BadgeCheck className="size-4 text-sky-300" />,
   failed: <CircleX className="size-4 text-destructive" />,
-}
+};
 
 const providerLabel: Record<DeployItem["llmProvider"], string> = {
   openrouter: "Open Router",
   openai: "Open AI",
   anthropic: "Anthropic",
-}
+};
 
-function getRelativeTime(value: string | null): string {
-  if (!value) return "just now"
+function getRelativeTime(value: Date | null): string {
+  if (!value) return "just now";
 
-  let date = new Date(value)
-  if (Number.isNaN(date.getTime()) && value.includes(":")) {
-    const today = new Date()
-    const datePart = today.toISOString().slice(0, 10)
-    date = new Date(`${datePart}T${value}`)
+  const date = value instanceof Date ? value : new Date(value);
 
-    if (!Number.isNaN(date.getTime()) && date.getTime() > today.getTime()) {
-      date = new Date(date.getTime() - 24 * 60 * 60 * 1000)
-    }
-  }
+  if (isNaN(date.getTime())) return "just now";
 
-  if (Number.isNaN(date.getTime())) return "just now"
-  const now = Date.now()
-  const diffMs = Math.max(0, now - date.getTime())
-  const minute = 60 * 1000
-  const hour = 60 * minute
-  const day = 24 * hour
-  if (diffMs >= day) return `${Math.floor(diffMs / day)}d ago`
-  if (diffMs >= hour) return `${Math.floor(diffMs / hour)}h ago`
-  if (diffMs >= minute) return `${Math.floor(diffMs / minute)}m ago`
-  return "just now"
+  const diffMs = Date.now() - date.getTime();
+
+  if (diffMs < 0) return "just now"; // Future date
+
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (diffMs >= day) return `${Math.floor(diffMs / day)}d ago`;
+  if (diffMs >= hour) return `${Math.floor(diffMs / hour)}h ago`;
+  if (diffMs >= minute) return `${Math.floor(diffMs / minute)}m ago`;
+  return "just now";
 }
 
 type DeploymentCardProps = {
-  item: DeployItem
-  onOpenDetail: (item: DeployItem) => void
-}
+  item: DeployItem;
+  onOpenDetail: (item: DeployItem) => void;
+};
 
 function DeploymentCard({ item, onOpenDetail }: DeploymentCardProps) {
   return (
@@ -61,11 +92,11 @@ function DeploymentCard({ item, onOpenDetail }: DeploymentCardProps) {
       onClick={() => onOpenDetail(item)}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          onOpenDetail(item)
+          event.preventDefault();
+          onOpenDetail(item);
         }
       }}
-      className="group w-full overflow-hidden rounded-xl border border-border text-left shadow-[0_0_0_1px_rgba(255,255,255,0.02)] transition-colors hover:border-base-600"
+      className="group w-full overflow-hidden rounded-xl border border-border bg-accent/15 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.02)] transition-colors hover:border-base-600"
     >
       <div className="flex items-start justify-between gap-4 px-5 py-4">
         <div className="min-w-0 space-y-1">
@@ -75,7 +106,9 @@ function DeploymentCard({ item, onOpenDetail }: DeploymentCardProps) {
         </div>
         <div className="flex shrink-0 items-center gap-3 md:gap-12">
           {statusIcons[item.status]}
-          <span className="text-xs text-base-400">{getRelativeTime(item.createdAt)}</span>
+          <span className="text-xs text-base-400">
+            {getRelativeTime(item.deployAt)}
+          </span>
         </div>
       </div>
 
@@ -87,7 +120,9 @@ function DeploymentCard({ item, onOpenDetail }: DeploymentCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <CircleDot className="size-4 text-base-400" />
-            <span className="truncate text-sm">{providerLabel[item.llmProvider]}</span>
+            <span className="truncate text-sm">
+              {providerLabel[item.llmProvider]}
+            </span>
           </div>
           <div />
           <div className="flex items-center justify-end">
@@ -103,7 +138,7 @@ function DeploymentCard({ item, onOpenDetail }: DeploymentCardProps) {
         </div>
       </div>
     </article>
-  )
+  );
 }
 
 function LoadingCards() {
@@ -127,12 +162,13 @@ function LoadingCards() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 export default function Deploy() {
-  const [selectedDeployment, setSelectedDeployment] = useState<DeployItem | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false)
+  const [selectedDeployment, setSelectedDeployment] =
+    useState<DeployItem | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   const { data, error, isLoading } = useSWR<DeployItemsResponse>(
     "/api/deploy",
@@ -140,14 +176,23 @@ export default function Deploy() {
     {
       refreshInterval: (latestData) =>
         latestData?.items.some((item) => item.status === "started") ? 5000 : 0,
-    }
-  )
+    },
+  );
 
-  const totalClaws = useMemo(() => (data?.items.length ?? 0).toString(), [data?.items.length])
+  const totalClaws = useMemo(
+    () => (data?.items.length ?? 0).toString(),
+    [data?.items.length],
+  );
 
   const handleOpenDetail = (item: DeployItem) => {
-    setSelectedDeployment(item)
-    setIsSheetOpen(true)
+    setSelectedDeployment(item);
+    setIsSheetOpen(true);
+  };
+
+  if(!isLoading && !error && data && data.items.length === 0){
+    return (
+      <EmptyState/>
+    )
   }
 
   return (
@@ -156,7 +201,9 @@ export default function Deploy() {
         <h1 className="text-xl font-semibold tracking-tight text-base-100">
           Deployments
         </h1>
-        <p className="text-sm font-semibold text-base-400">{totalClaws} Claws</p>
+        <p className="text-sm font-semibold text-base-400">
+          {totalClaws} Claws
+        </p>
       </div>
 
       {isLoading ? <LoadingCards /> : null}
@@ -167,11 +214,6 @@ export default function Deploy() {
         </div>
       ) : null}
 
-      {!isLoading && !error && data && data.items.length === 0 ? (
-        <div className="rounded-xl border border-base-700 bg-base-900/40 px-5 py-8 text-center text-base-300">
-          No deployments yet.
-        </div>
-      ) : null}
 
       {!isLoading && !error && data && data.items.length > 0 ? (
         <div className="space-y-4">
@@ -191,5 +233,5 @@ export default function Deploy() {
         onOpenChange={setIsSheetOpen}
       />
     </div>
-  )
+  );
 }
