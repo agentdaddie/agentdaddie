@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Header />
           <div className="flex flex-1 flex-col ">
             <div className="@container/main flex flex-1 flex-col gap-2">
-              <div className="flex flex-col overflow-y-auto">
+              <div className="flex flex-col overflow-y-auto max-h-[90vh]">
                 <TooltipProvider>{children}</TooltipProvider>
               </div>
             </div>

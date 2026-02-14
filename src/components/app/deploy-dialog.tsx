@@ -170,7 +170,7 @@ export function DeployDialog() {
         type="button"
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        className="rounded-full text-teal-300 hover:text-teal-400 text-xs font-[550] tracking-wider"
+        className="rounded-full text-sky-300 hover:text-sky-400 text-xs font-[550] tracking-wider"
       >
        <Plus/> Deploy Claw
       </Button>

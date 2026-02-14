@@ -44,3 +44,26 @@ export interface DeployCheckResponse {
   ok: boolean
   status: "failed" | "success"
 }
+
+export interface DeployItem {
+  id: string
+  deploymentId: string
+  name: string
+  region: string
+  llmProvider: "openai" | "anthropic" | "openrouter"
+  status: "started" | "failed" | "success"
+  deployedUrl: string | null
+  tunnelLog: string | null
+  createdAt: string | null
+  userId: string
+}
+
+export interface DeployItemsResponse {
+  ok: boolean
+  items: DeployItem[]
+}
+
+export interface DeployItemResponse {
+  ok: boolean
+  item: DeployItem
+}

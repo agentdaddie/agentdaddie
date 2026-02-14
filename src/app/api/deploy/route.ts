@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import randomName from '@scaleway/random-name'
+import { desc, eq } from "drizzle-orm"
 
 import { auth } from "@/lib/auth";
 import { doDeployment } from "@/db/schema/do-deploy";
@@ -7,11 +8,40 @@ import { getDb } from "@/db";
 
 import type {
     DeployDialogFormValues,
+    DeployItemsResponse,
     DeploySubmissionResponse,
     DigitalOceanErrorResponse,
     DropletCreationResponse
 } from "@/lib/type"
 import { randomUUID } from "crypto";
+
+export async function GET(request: NextRequest) {
+    try {
+        const session = await auth.api.getSession({
+            headers: request.headers,
+        })
+
+        if (!session) {
+            return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 })
+        }
+
+        const db = await getDb()
+        const items = await db.query.doDeployment.findMany({
+            where: eq(doDeployment.userId, session.user.id),
+            orderBy: [desc(doDeployment.createdAt), desc(doDeployment.id)],
+        })
+
+        const response: DeployItemsResponse = {
+            ok: true,
+            items,
+        }
+
+        return NextResponse.json(response, { status: 200 })
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Unexpected server error"
+        return NextResponse.json({ ok: false, error: message }, { status: 500 })
+    }
+}
 
 export async function POST(request: NextRequest) {
     try {
