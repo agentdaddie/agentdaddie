@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { fetchDeployItemById } from "@/lib/fetchers";
 
 import type { DeployItem, DeployItemResponse } from "@/lib/type";
+import { formatCreatedAt } from "@/lib/utils";
+
 
 function getDomainFromUrl(url: string | null): string {
   if (!url) return "Pending tunnel URL";
@@ -33,33 +35,6 @@ function getDomainFromUrl(url: string | null): string {
   } catch {
     return url;
   }
-}
-
-function formatCreatedAt(value: string | null): string {
-  if (!value) return "Unknown";
-
-  let date: Date;
-
-  // 1. If it's ONLY time (e.g., "14:30:00"), we must tell JS it's UTC 
-  // so it can calculate the offset to your local time.
-  if (/^\d{2}:\d{2}/.test(value)) {
-    const today = new Date().toISOString().split('T')[0]; // "2024-05-20"
-    // We combine Today + Time + 'Z' to force UTC parsing
-    date = new Date(`${today}T${value}${value.includes('Z') ? '' : 'Z'}`);
-  } else {
-    // 2. For full strings, ensure there is a 'Z' at the end if it's missing
-    const utcValue = value.endsWith('Z') ? value : `${value}Z`;
-    date = new Date(utcValue);
-  }
-
-  if (isNaN(date.getTime())) return "Unknown";
-
-  // 3. This tells the browser: "Take that UTC time and show it in the user's system timezone"
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-    // hourCycle: 'h12' // Uncomment if you specifically want AM/PM
-  }).format(date);
 }
 
 const statusText: Record<DeployItem["status"], string> = {
