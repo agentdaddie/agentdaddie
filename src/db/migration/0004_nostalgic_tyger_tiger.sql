@@ -1,0 +1,1 @@
+ALTER TABLE "do_deployment" RENAME COLUMN "created_at" TO "deploy_at";

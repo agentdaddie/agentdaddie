@@ -1,5 +1,5 @@
 // Digital Ocean Deployment Schema
-import { pgTable, text, time, uuid, pgEnum} from "drizzle-orm/pg-core"
+import { pgTable, text, uuid, pgEnum, timestamp} from "drizzle-orm/pg-core"
 import { user } from "./auth"
 
 export const llmProviderEnum = pgEnum('llm_provider', ['openai', 'openrouter', 'anthropic']);
@@ -15,6 +15,6 @@ export const doDeployment = pgTable("do_deployment", {
   status: deploymentStatusEnum("status").notNull(),
   deployedUrl: text("deployed_url"), // if status success then tehre will the the deployedUrl
   tunnelLog: text("tunnel_log"),
-  createdAt: time("created_at").defaultNow(),
+  deployAt: timestamp("deploy_at", {withTimezone: true}).defaultNow(),
   userId: text("user_id").notNull().references(()=>user.id, { onDelete: "cascade" })
 });

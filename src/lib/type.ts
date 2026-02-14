@@ -24,7 +24,7 @@ export interface DeploySubmissionResponse {
   ok: boolean
 }
 
-export interface DropletCreationResponse{
+export interface DropletCreationResponse {
   droplet: {
     id: number;
   };
@@ -54,7 +54,7 @@ export interface DeployItem {
   status: "started" | "failed" | "success"
   deployedUrl: string | null
   tunnelLog: string | null
-  createdAt: string | null
+  deployAt: Date | null
   userId: string
 }
 

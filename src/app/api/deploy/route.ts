@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import randomName from '@scaleway/random-name'
-import { desc, eq } from "drizzle-orm"
+import { asc, eq } from "drizzle-orm"
 
 import { auth } from "@/lib/auth";
 import { doDeployment } from "@/db/schema/do-deploy";
@@ -26,10 +26,11 @@ export async function GET(request: NextRequest) {
         }
 
         const db = await getDb()
-        const items = await db.query.doDeployment.findMany({
-            where: eq(doDeployment.userId, session.user.id),
-            orderBy: [desc(doDeployment.createdAt), desc(doDeployment.id)],
-        })
+        const items = await db
+            .select()
+            .from(doDeployment)
+            .where(eq(doDeployment.userId, session.user.id))
+            .orderBy(asc(doDeployment.deployAt));
 
         const response: DeployItemsResponse = {
             ok: true,
@@ -78,8 +79,6 @@ export async function POST(request: NextRequest) {
         }
 
         const serverName = randomName("agentdaddie")
-
-        console.log("deploy_payload", payload)
 
         const apiKeyLine =
             payload.llmProvider === "openai"
