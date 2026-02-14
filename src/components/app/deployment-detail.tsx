@@ -35,14 +35,31 @@ function getDomainFromUrl(url: string | null): string {
   }
 }
 
-function formatCreatedAt(value: Date | null): string {
+function formatCreatedAt(value: string | null): string {
   if (!value) return "Unknown";
-  
-  const date = value instanceof Date ? value : new Date(value);
-  
+
+  let date: Date;
+
+  // 1. If it's ONLY time (e.g., "14:30:00"), we must tell JS it's UTC 
+  // so it can calculate the offset to your local time.
+  if (/^\d{2}:\d{2}/.test(value)) {
+    const today = new Date().toISOString().split('T')[0]; // "2024-05-20"
+    // We combine Today + Time + 'Z' to force UTC parsing
+    date = new Date(`${today}T${value}${value.includes('Z') ? '' : 'Z'}`);
+  } else {
+    // 2. For full strings, ensure there is a 'Z' at the end if it's missing
+    const utcValue = value.endsWith('Z') ? value : `${value}Z`;
+    date = new Date(utcValue);
+  }
+
   if (isNaN(date.getTime())) return "Unknown";
-  
-  return date.toLocaleString();
+
+  // 3. This tells the browser: "Take that UTC time and show it in the user's system timezone"
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    // hourCycle: 'h12' // Uncomment if you specifically want AM/PM
+  }).format(date);
 }
 
 const statusText: Record<DeployItem["status"], string> = {
@@ -196,21 +213,15 @@ export function DeploymentDetail({
                     size="sm"
                     disabled={!canOpenLink}
                   >
-                    <Button
-                    disabled={!canOpenLink}
-                    className="flex items-center gap-2"
-                    >
-                      <ExternalLink className="size-4" />
-
-                        <a
+                    <a
                       href={currentDeployment.deployedUrl ?? "#"}
                       target="_blank"
                       rel="noreferrer"
+                      className="flex items-center gap-2"
                     >
+                      <ExternalLink className="size-4" />
                       Open
                     </a>
-
-                    </Button>
                   </Button>
                 </div>
               </section>

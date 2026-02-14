@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import randomName from '@scaleway/random-name'
-import { asc, eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 
 import { auth } from "@/lib/auth";
 import { doDeployment } from "@/db/schema/do-deploy";
@@ -14,6 +14,21 @@ import type {
     DropletCreationResponse
 } from "@/lib/type"
 import { randomUUID } from "crypto";
+
+function normalizeDeployAtToIso(value: string | null): string | null {
+    if (!value) return null
+    const timeOnlyPattern = /^\d{2}:\d{2}:\d{2}(?:\.\d+)?$/
+    if (timeOnlyPattern.test(value)) {
+        return value
+    }
+
+    const parsed = new Date(value)
+    if (!Number.isNaN(parsed.getTime())) {
+        return parsed.toISOString()
+    }
+
+    return null
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -30,11 +45,14 @@ export async function GET(request: NextRequest) {
             .select()
             .from(doDeployment)
             .where(eq(doDeployment.userId, session.user.id))
-            .orderBy(asc(doDeployment.deployAt));
+            .orderBy(desc(doDeployment.deployAt));
 
         const response: DeployItemsResponse = {
             ok: true,
-            items,
+            items: items.map((item) => ({
+                ...item,
+                deployAt: normalizeDeployAtToIso(item.deployAt),
+            })),
         }
 
         return NextResponse.json(response, { status: 200 })
@@ -251,7 +269,6 @@ fi
         }
 
         const data = (await createServerResponse.json()) as DropletCreationResponse
-        console.log("~~SERVER DATA~~~", data)
 
         await db.insert(doDeployment).values({
             id: deploymentItemPrimaryId,
@@ -260,7 +277,7 @@ fi
             region,
             llmProvider: payload.llmProvider,
             status: "started",
-            userId: userId
+            userId: userId,
         })
 
         const response: DeploySubmissionResponse = {

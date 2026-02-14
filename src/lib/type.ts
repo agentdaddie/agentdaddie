@@ -54,7 +54,7 @@ export interface DeployItem {
   status: "started" | "failed" | "success"
   deployedUrl: string | null
   tunnelLog: string | null
-  deployAt: Date | null
+  deployAt: string | null
   userId: string
 }
 

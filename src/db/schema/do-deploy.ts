@@ -15,6 +15,6 @@ export const doDeployment = pgTable("do_deployment", {
   status: deploymentStatusEnum("status").notNull(),
   deployedUrl: text("deployed_url"), // if status success then tehre will the the deployedUrl
   tunnelLog: text("tunnel_log"),
-  deployAt: timestamp("deploy_at", {withTimezone: true}).defaultNow(),
+  deployAt: timestamp("deploy_at", { withTimezone: true, mode: "string" }).defaultNow(),
   userId: text("user_id").notNull().references(()=>user.id, { onDelete: "cascade" })
 });

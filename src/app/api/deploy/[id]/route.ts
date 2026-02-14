@@ -7,6 +7,21 @@ import { doDeployment } from "@/db/schema/do-deploy"
 
 import type { DeployItemResponse } from "@/lib/type"
 
+function normalizeDeployAtToIso(value: string | null): string | null {
+  if (!value) return null
+  const timeOnlyPattern = /^\d{2}:\d{2}:\d{2}(?:\.\d+)?$/
+  if (timeOnlyPattern.test(value)) {
+    return value
+  }
+
+  const parsed = new Date(value)
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toISOString()
+  }
+
+  return null
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -39,7 +54,10 @@ export async function GET(
 
     const response: DeployItemResponse = {
       ok: true,
-      item,
+      item: {
+        ...item,
+        deployAt: normalizeDeployAtToIso(item.deployAt),
+      },
     }
     return NextResponse.json(response, { status: 200 })
   } catch (error) {

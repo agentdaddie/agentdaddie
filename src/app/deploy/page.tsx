@@ -58,25 +58,42 @@ const providerLabel: Record<DeployItem["llmProvider"], string> = {
   anthropic: "Anthropic",
 };
 
-function getRelativeTime(value: Date | null): string {
-  if (!value) return "just now";
+function getRelativeTime(value: string | null): string {
+  if (!value) return "just now"
+  
+  const timeOnlyPattern = /^(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?$/
+  const timeMatch = value.match(timeOnlyPattern)
+  let date: Date
 
-  const date = value instanceof Date ? value : new Date(value);
+  if (timeMatch) {
+    // Create date in UTC then convert to local
+    const now = new Date()
+    const datePart = now.toISOString().slice(0, 10)
+    date = new Date(`${datePart}T${timeMatch[0]}Z`) // Add Z for UTC parsing
+  } else {
+    date = new Date(value)
+  }
 
-  if (isNaN(date.getTime())) return "just now";
+  if (isNaN(date.getTime())) return "just now"
 
-  const diffMs = Date.now() - date.getTime();
+  let diffMs = Date.now() - date.getTime()
+  
+  // If time appears in future, it's from yesterday
+  if (diffMs < 0 && timeMatch) {
+    date = new Date(date.getTime() - 24 * 60 * 60 * 1000)
+    diffMs = Date.now() - date.getTime()
+  }
 
-  if (diffMs < 0) return "just now"; // Future date
+  if (diffMs < 0) return "just now"
 
-  const minute = 60 * 1000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
+  const minute = 60 * 1000
+  const hour = 60 * minute
+  const day = 24 * hour
 
-  if (diffMs >= day) return `${Math.floor(diffMs / day)}d ago`;
-  if (diffMs >= hour) return `${Math.floor(diffMs / hour)}h ago`;
-  if (diffMs >= minute) return `${Math.floor(diffMs / minute)}m ago`;
-  return "just now";
+  if (diffMs >= day) return `${Math.floor(diffMs / day)}d ago`
+  if (diffMs >= hour) return `${Math.floor(diffMs / hour)}h ago`
+  if (diffMs >= minute) return `${Math.floor(diffMs / minute)}m ago`
+  return "just now"
 }
 
 type DeploymentCardProps = {
