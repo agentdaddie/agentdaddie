@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 // import Image from "next/image";
 import { UserProfile } from "./user-profile";
 import { ConnectDigitalOcean } from "./connect-digital-ocean";
