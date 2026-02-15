@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const tunnelOrigin = process.env.NEXT_ALLOWED_DEV_ORIGIN!;
+const tunnelOrigin = process.env.DEPLOYMENT_CHECK!;
 const isDevEnv = process.env.ENV === "DEV";
 
 const nextConfig: NextConfig = isDevEnv
