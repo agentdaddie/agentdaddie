@@ -4,7 +4,6 @@ import Link from "next/link";
 
 // import Image from "next/image";
 import { UserProfile } from "./user-profile";
-import { Bubbles } from "lucide-react";
 import { ConnectDigitalOcean } from "./connect-digital-ocean";
 import { DeployDialog } from "./deploy-dialog";
 import { useDigitalOcean } from "@/context/digital-ocean-provider";
@@ -16,16 +15,7 @@ export function Header() {
       <div className="flex flex-col w-full px-4 py-2 md:py-0 md:pt-1">
         <div className="flex flex-row items-center justify-between gap-1 pb-1">
           <div className="flex flex-row items-center justify-between  gap-2 rounded-full">
-            <Link href="/">
-              {/* <Image
-                src="/favicon.png"
-                alt="Scint Logo"
-                width={30}
-                height={30}
-                className="size-7 rounded-full"
-              /> */}
-              <Bubbles/>
-            </Link>
+            <h1 className="text-sm briFont">agent daddie</h1>
           </div>
           <div className="flex items-center gap-4">
             {isConnected&&(
