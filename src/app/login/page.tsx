@@ -14,7 +14,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-3">
       <div className="p-8 rounded-2xl border border-base-800 bg-black w-full max-w-sm flex flex-col items-center gap-6">
-        <h1 className="text-2xl font-bold tracking-tight">Sign in and deploy your Open Claw</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Sign in and deploy your Open Claw on your own server.</h1>
         
         <Button 
           onClick={handleSignIn}
