@@ -9,7 +9,7 @@ const db = await getDb()
 
 
 export const auth = betterAuth({
-    appName: "ScintAI",
+    appName: "Agent Daddie",
     plugins: [nextCookies()],
     socialProviders: {
         google: {
