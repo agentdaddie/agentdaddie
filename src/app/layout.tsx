@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Bricolage_Grotesque  } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,6 +11,13 @@ const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
 	subsets: ["latin"],
 });
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-bricolage",
+  display: "swap",
+});
+
 
 export const metadata: Metadata = {
 	title: "Agent Daddie",
@@ -27,7 +34,7 @@ export default function RootLayout({
 			<head>
 				{/* <link rel="icon" href="/favicon.svg" type="image/svg+xml"></link> */}
 			</head>
-			<body className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}>{children}</body>
+			<body className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} antialiased dark`}>{children}</body>
 		</html>
 	);
 }

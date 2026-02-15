@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,6 +11,10 @@ html {
 code,
 pre {
 	font-family: var(--font-geist-mono);
+}
+
+.briFont {
+  font-family: var(--font-bricolage);
 }
 
 :root {
