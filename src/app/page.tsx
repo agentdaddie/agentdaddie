@@ -8,6 +8,8 @@ import WhyAgentDaddie from "@/components/landing-page/why-agent-daddie";
 import { DemoVideoPlayerDemo } from "@/components/landing-page/demo-player";
 import AboutServer from "@/components/landing-page/about-server";
 
+import Link
+ from "next/link";
 export default function Home() {
   return (
     <div className="min-h-screen overflow-hidden relative">
@@ -48,7 +50,9 @@ export default function Home() {
                   <Github className=""/>
                 </Button>
               </a>
+			  <Link href="/deploy">
 			  <Button size="xs" variant="default" className="px-3 font-[550]">Deploy now</Button>
+			  </Link>
             </div>
           </div>
         </div>

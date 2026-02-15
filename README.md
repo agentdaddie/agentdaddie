@@ -105,8 +105,7 @@ Check `.env.example` for the full template. Key variables include:
 *   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: For Google OAuth.
 *   `DIGITALOCEAN_CLIENT_ID`, `DIGITALOCEAN_CLIENT_SECRET`, `DIGITALOCEAN_REDIRECT_URI`: For DigitalOcean OAuth.
 *   `DIGITALOCEAN_OAUTH_SCOPE`: Optional OAuth scopes (defaults to `read write`).
-*   `DEPLOYMENT_CHECK`: Optional callback URL override for deployment status checks (useful in development with tunnels).
-*   `NODE_ENV`: Standard runtime mode (`development` or `production`).
+*   `DEPLOYMENT_CHECK`: # The server will send a message after setting up the ClawBot to this URL to confirm whether it is up and running. This URL will be passed in userData within /api/deploy -> UserData
 
 ### Deployment Check Callback (`DEPLOYMENT_CHECK`)
 

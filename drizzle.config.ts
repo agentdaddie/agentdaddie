@@ -3,7 +3,7 @@
  * ssl, no ssl url etc..
  * Hperdrive from cloudflare only support ssl/tsl connections
 */
-const prod = false;
+const prod = process.env.ENV !== "DEV";
 
 import { defineConfig } from "drizzle-kit";
 
