@@ -1,21 +1,29 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = getSessionCookie(request);
 
   const isAuthenticated = Boolean(session);
 
   // Routes that REQUIRE authentication
-  const protectedRoutes = ["/deploy"];
+  const protectedRoutes = [
+    "/deploy",
+  ];
 
-  const isProtectedRoute =
-    protectedRoutes.includes(pathname);
+  const isProtectedRoute = protectedRoutes.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
 
   // 1. Not authenticated → trying to access protected routes
   if (!isAuthenticated && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set(
+      "callback",
+      `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    );
+    return NextResponse.redirect(loginUrl);
   }
 
   // 2. Authenticated → trying to access login
