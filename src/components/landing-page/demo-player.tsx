@@ -7,6 +7,7 @@ export function DemoVideoPlayerDemo() {
     <VideoPlayer
       src="https://bucket.agentdaddie.com/agentdaddie.mov"
       poster="/thumbnail.png"
+      playbackRate={2}
       size="default"
       className="aspect-video border rounded-2xl"
     />

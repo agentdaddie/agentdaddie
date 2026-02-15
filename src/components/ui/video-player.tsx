@@ -36,6 +36,7 @@ export interface VideoPlayerProps
     VariantProps<typeof videoPlayerVariants> {
   src: string;
   poster?: string;
+  playbackRate?: number;
   showControls?: boolean;
   autoHide?: boolean;
   className?: string;
@@ -48,6 +49,8 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
       size,
       src,
       poster,
+      playbackRate = 1,
+      playsInline = true,
       showControls = true,
       autoHide = true,
       ...props
@@ -205,6 +208,13 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
     }, []);
 
     React.useEffect(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      video.defaultPlaybackRate = playbackRate;
+      video.playbackRate = playbackRate;
+    }, [playbackRate]);
+
+    React.useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
         if (
           !(
@@ -295,8 +305,9 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
         />
         <video
           aria-label="Video"
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain md:object-fill bg-[#111110]"
           onClick={togglePlay}
+          playsInline={playsInline}
           poster={poster}
           ref={videoRef}
           src={src}
