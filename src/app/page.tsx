@@ -111,10 +111,11 @@ export default function Home() {
           <p className="relative z-10">
             Need help? Contact us at{" "}
             <a
-              href="mailto:support@grills.dev"
+              href="https://x.com/aditya_pushkar_"
+			  target="_blank"
               className="text-primary-400 hover:underline font-medium tracking-widest pl-2"
             >
-              support@agentdaddie.com
+              x (aditya_pushkar_)
             </a>
           </p>
         </footer>

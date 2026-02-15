@@ -21,7 +21,7 @@ const bricolage = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
 	title: "Agent Daddie",
-	description: "Deploy Open Claw on your own server in minutes with just few clicks.",
+	description: "Deploy Open Claw on your own server in minutes with just few clicks. No technical knowledge needed.",
 };
 
 export default function RootLayout({
