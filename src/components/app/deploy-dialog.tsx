@@ -394,6 +394,7 @@ export function DeployDialog() {
                     {...register("openClawGatewayId", {
                       required: "OpenClaw gateway ID is required",
                     })}
+                    type="password"
                     aria-invalid={errors.openClawGatewayId ? "true" : "false"}
                   />
                   {errors.openClawGatewayId ? (
